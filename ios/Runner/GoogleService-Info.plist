@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>200440905548-pi8h709e9t1b7hndt4r680uuekav8jn1.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.200440905548-pi8h709e9t1b7hndt4r680uuekav8jn1</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>200440905548-lk9gu3ffqcs5t0hffar466oej2ag5onn.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDaUa8-k2g41QAa1zUChWR3mldBhDKztno</string>
+	<key>GCM_SENDER_ID</key>
+	<string>200440905548</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.coolcodes.barberShop</string>
+	<key>PROJECT_ID</key>
+	<string>barbershop-af94b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>barbershop-af94b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:200440905548:ios:2e12e1e2d64615bca259e9</string>
+</dict>
+</plist>
