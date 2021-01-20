@@ -21,4 +21,9 @@ class ProviderData extends ChangeNotifier {
   bool showSignUpAppleSignInSpinner;
 
   bool isTimePicked;
+
+  String price;
+  String productId;
+  String productName;
+  String customerName;
 }

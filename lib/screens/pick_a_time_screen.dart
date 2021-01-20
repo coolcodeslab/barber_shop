@@ -1,6 +1,5 @@
 import 'package:barber_shop/provider_data.dart';
 import 'package:barber_shop/constants.dart';
-import 'package:barber_shop/screens/add_booking_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -32,41 +31,6 @@ class _PickATimeScreenState extends State<PickATimeScreen>
   DateTime day2;
   DateTime day3;
   DateTime day4;
-
-  void checkDates() {
-    /*Gets today's time and decides tomorrow, day after and fourth day*/
-    day1 = DateTime.now();
-    day2 = DateTime(day1.year, day1.month, day1.day + 1);
-    day3 = DateTime(day1.year, day1.month, day1.day + 2);
-    day4 = DateTime(day1.year, day1.month, day1.day + 3);
-
-    //Gets the number of the day today
-    today = int.parse(DateFormat('d').format(day1));
-
-    //Gets the number of the fourthDay from today
-    tomorrow = int.parse(DateFormat('d').format(day2));
-
-    //Gets the number of the thirdDay from today
-    dayAfterTomorrow = int.parse(DateFormat('d').format(day3));
-
-    //Gets the number of the fourthDay from today
-    fourthDay = int.parse(DateFormat('d').format(day4));
-  }
-
-  void onTapDone() {
-    setState(() {
-      Provider.of<ProviderData>(context, listen: false).isTimePicked = true;
-    });
-
-    Navigator.pop(context, {
-      'time': Provider.of<ProviderData>(context, listen: false).time,
-      'date': Provider.of<ProviderData>(context, listen: false).day,
-      'month': Provider.of<ProviderData>(context, listen: false).month,
-      'year': Provider.of<ProviderData>(context, listen: false).year,
-      'index': Provider.of<ProviderData>(context, listen: false).index,
-      'dateTime': Provider.of<ProviderData>(context, listen: false).dateTime,
-    });
-  }
 
   @override
   void initState() {
@@ -185,6 +149,41 @@ class _PickATimeScreenState extends State<PickATimeScreen>
         ],
       ),
     );
+  }
+
+  void checkDates() {
+    /*Gets today's time and decides tomorrow, day after and fourth day*/
+    day1 = DateTime.now();
+    day2 = DateTime(day1.year, day1.month, day1.day + 1);
+    day3 = DateTime(day1.year, day1.month, day1.day + 2);
+    day4 = DateTime(day1.year, day1.month, day1.day + 3);
+
+    //Gets the number of the day today
+    today = int.parse(DateFormat('d').format(day1));
+
+    //Gets the number of the fourthDay from today
+    tomorrow = int.parse(DateFormat('d').format(day2));
+
+    //Gets the number of the thirdDay from today
+    dayAfterTomorrow = int.parse(DateFormat('d').format(day3));
+
+    //Gets the number of the fourthDay from today
+    fourthDay = int.parse(DateFormat('d').format(day4));
+  }
+
+  void onTapDone() {
+    setState(() {
+      Provider.of<ProviderData>(context, listen: false).isTimePicked = true;
+    });
+
+    Navigator.pop(context, {
+      'time': Provider.of<ProviderData>(context, listen: false).time,
+      'date': Provider.of<ProviderData>(context, listen: false).day,
+      'month': Provider.of<ProviderData>(context, listen: false).month,
+      'year': Provider.of<ProviderData>(context, listen: false).year,
+      'index': Provider.of<ProviderData>(context, listen: false).index,
+      'dateTime': Provider.of<ProviderData>(context, listen: false).dateTime,
+    });
   }
 }
 

@@ -1,4 +1,7 @@
 import 'package:barber_shop/constants.dart';
+import 'package:barber_shop/screens/add_booking_screen.dart';
+import 'package:barber_shop/screens/address_book.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
@@ -9,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 class RoundButtonWidget extends StatelessWidget {
   RoundButtonWidget(
       {this.title, this.onTap, this.height = 40, this.width = 254});
+
   final String title;
   final Function onTap;
   final double height;
@@ -53,24 +57,26 @@ class RoundButtonWidget extends StatelessWidget {
 
 //text field widget used in all parts of the app
 class TextFieldWidget extends StatelessWidget {
-  TextFieldWidget(
-      {this.hintText,
-      this.onChanged,
-      this.obscureText = false,
-      this.errorText,
-      this.controller});
+  TextFieldWidget({
+    this.hintText,
+    this.onChanged,
+    this.obscureText = false,
+    this.errorText,
+    this.controller,
+    this.maxLines,
+    this.maxLength,
+  });
 
   final String hintText;
   final Function onChanged;
   final bool obscureText;
   final String errorText;
   final TextEditingController controller;
+  final int maxLines;
+  final int maxLength;
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.height;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.2),
@@ -90,6 +96,8 @@ class TextFieldWidget extends StatelessWidget {
         ),
         onChanged: onChanged,
         obscureText: obscureText,
+        maxLines: maxLines,
+        maxLength: maxLength,
         decoration: InputDecoration(
           errorText: errorText,
           hintText: hintText,
@@ -117,15 +125,8 @@ class TextFieldWidget extends StatelessWidget {
 
 class BoxContainer extends StatelessWidget {
   BoxContainer(
-      {this.width,
-      this.height,
-      this.margin,
-      this.onTap,
-      this.child,
-      this.imageUrl,
-      this.title});
-  final double height;
-  final double width;
+      {this.margin, this.onTap, this.child, this.imageUrl, this.title});
+
   final EdgeInsetsGeometry margin;
   final Function onTap;
   final Widget child;
@@ -134,12 +135,14 @@ class BoxContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: margin,
-        height: height,
-        width: width,
+        height: height * 0.15,
+        width: width * 0.38,
         child: Stack(
           children: [
             Padding(
@@ -152,8 +155,8 @@ class BoxContainer extends StatelessWidget {
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                height: 120,
-                width: 180,
+                height: height * 0.18,
+                width: width * 0.48,
                 decoration: BoxDecoration(
                   image: imageUrl == null
                       ? null
@@ -210,12 +213,8 @@ class ServiceContainer extends StatelessWidget {
             Container(
               height: height * 0.12,
               width: width * 0.107,
-              decoration: BoxDecoration(
-                image: imageUrl == null
-                    ? null
-                    : DecorationImage(
-                        image: AssetImage(imageUrl),
-                      ),
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
               ),
             ),
             SizedBox(
@@ -252,7 +251,9 @@ class ServiceContainer extends StatelessWidget {
 
 class DrawerButton extends StatelessWidget {
   DrawerButton({this.onTap});
+
   final Function onTap;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -271,6 +272,7 @@ class HorizontalRows extends StatelessWidget {
   HorizontalRows({this.children});
 
   final List<Widget> children;
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -286,9 +288,22 @@ class HorizontalRows extends StatelessWidget {
 }
 
 class PopUpContainer extends StatelessWidget {
-  PopUpContainer({this.name, this.data});
+  PopUpContainer({
+    this.name,
+    this.data,
+    this.price,
+    this.fromGetStarted,
+    this.serviceName,
+    this.imageUrl,
+  });
+
   final String name;
   final String data;
+  final String price;
+  final bool fromGetStarted;
+  final String serviceName;
+  final String imageUrl;
+
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
@@ -301,43 +316,69 @@ class PopUpContainer extends StatelessWidget {
           color: Color(0xff4D4A56),
         ),
         width: width * 0.693,
-        height: height * 0.57,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        height: height * 0.55,
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              name,
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-                fontSize: 38,
-              ),
-            ),
-            Text(
-              '\$12.99',
-              style: TextStyle(
-                fontSize: 38,
-                color: kButtonColor,
-              ),
-            ),
             Center(
               child: Container(
                 height: height * 0.255,
                 width: width * 0.4,
-                color: Color(0xff4D4A56),
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                name,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 20,
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '\$$price',
+                style: TextStyle(
+                  fontSize: 26,
+                  color: kButtonColor,
+                ),
               ),
             ),
             SizedBox(
               height: height * 0.03,
             ),
-            Center(
-              child: RoundButtonWidget(
-                onTap: () {},
-                title: 'Buy now',
-                width: width * 0.339,
-              ),
+            RoundButtonWidget(
+              onTap: () {
+                /*If it is fromGetStarted == true then book now button is shown
+                If fromGetStarted != true buy now button is shown*/
+
+                Navigator.pop(context); // Closing Dialog
+                fromGetStarted
+                    ? Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddBookingScreen(
+                                  serviceName: serviceName,
+                                )))
+                    : Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                AddressBook())); // Going to Address Book
+              },
+              title: fromGetStarted ? 'Book now' : 'Buy now',
+              width: width * 0.339,
             )
           ],
         ),
@@ -347,9 +388,11 @@ class PopUpContainer extends StatelessWidget {
 }
 
 class ItemContainer extends StatelessWidget {
-  ItemContainer({this.onTap, this.name});
+  ItemContainer({this.onTap, this.name, this.imageUrl});
+
   final Function onTap;
   final String name;
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -369,7 +412,9 @@ class ItemContainer extends StatelessWidget {
             Container(
               height: height * 0.12,
               width: width * 0.213,
-              color: Colors.transparent,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+              ),
             ),
             SizedBox(
               height: height * 0.015,
@@ -395,6 +440,7 @@ class PopUpServiceContainer extends StatelessWidget {
       this.price,
       this.imageUrl,
       this.onTapBookNow});
+
   final String title;
   final String description;
   final String price;
@@ -436,17 +482,21 @@ class PopUpServiceContainer extends StatelessWidget {
                 Container(
                   height: height * 0.12,
                   width: width * 0.107,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(image: AssetImage(imageUrl))),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                  ),
                 ),
               ],
             ),
             SizedBox(
               height: height * 0.015,
             ),
-            Text(
-              description,
-              style: kPopUpServiceContainerDescriptionStyle,
+            Container(
+              height: height * 0.285,
+              child: Text(
+                description,
+                style: kPopUpServiceContainerDescriptionStyle,
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -510,9 +560,11 @@ class TimeContainer extends StatelessWidget {
 
 class SocialSignInButton extends StatelessWidget {
   SocialSignInButton({this.onPressed, this.buttons, this.color});
+
   final Function onPressed;
   final Buttons buttons;
   final Color color;
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -571,8 +623,10 @@ class _CirclePainter extends BoxPainter {
 
 class BackGroundDesign extends StatelessWidget {
   BackGroundDesign({this.width, this.height});
+
   final double height;
   final double width;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -675,6 +729,7 @@ class BookingCard extends StatelessWidget {
 
 class SmallActionButton extends StatelessWidget {
   SmallActionButton({this.title, this.onTap});
+
   final String title;
   final Function onTap;
 
@@ -704,6 +759,7 @@ class ForgotPasswordButton extends StatelessWidget {
   const ForgotPasswordButton({
     this.onTap,
   });
+
   final Function onTap;
 
   @override

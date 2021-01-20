@@ -47,6 +47,9 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D51C29BF25B2A96E00172E33 /* pluckCutzProfile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = pluckCutzProfile.entitlements; sourceTree = "<group>"; };
+		D51C29C025B2AA1400172E33 /* pluckCutzDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = pluckCutzDebug.entitlements; sourceTree = "<group>"; };
+		D51C29C125B2AA1C00172E33 /* pluckCutzRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = pluckCutzRelease.entitlements; sourceTree = "<group>"; };
 		D54720EF25B01A8500EB877A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E0CA8C2B7330FF7E62590D8B /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -106,6 +109,9 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				D51C29C125B2AA1C00172E33 /* pluckCutzRelease.entitlements */,
+				D51C29C025B2AA1400172E33 /* pluckCutzDebug.entitlements */,
+				D51C29BF25B2A96E00172E33 /* pluckCutzProfile.entitlements */,
 				D54720EF25B01A8500EB877A /* GoogleService-Info.plist */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -376,6 +382,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/pluckCutzProfile.entitlements;
 				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 4ST3CBHX3D;
 				ENABLE_BITCODE = NO;
@@ -384,7 +391,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -515,6 +522,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/pluckCutzDebug.entitlements;
 				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 4ST3CBHX3D;
 				ENABLE_BITCODE = NO;
@@ -523,7 +531,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -548,6 +556,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/pluckCutzRelease.entitlements;
 				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 4ST3CBHX3D;
 				ENABLE_BITCODE = NO;
@@ -556,7 +565,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

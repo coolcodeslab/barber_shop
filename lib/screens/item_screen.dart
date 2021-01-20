@@ -1,8 +1,11 @@
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/constants.dart';
+import 'package:barber_shop/provider_data.dart';
+import 'package:barber_shop/screens/address_book.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 /*
 The user is allowed to view products in different sections
@@ -15,13 +18,14 @@ when pressed buy now button
  */
 class ItemScreen extends StatefulWidget {
   static const id = 'item screen';
-  ItemScreen(
-      {this.title,
-      this.section1,
-      this.section2,
-      this.section3,
-      this.section4,
-      this.fromGetStarted});
+  ItemScreen({
+    this.title,
+    this.section1,
+    this.section2,
+    this.section3,
+    this.section4,
+    this.fromGetStarted,
+  });
   final String title;
   final String section1;
   final String section2;
@@ -39,7 +43,6 @@ class _ItemScreenState extends State<ItemScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     tabController = TabController(
       length: 4,
@@ -79,8 +82,11 @@ class _ItemScreenState extends State<ItemScreen>
                   ],
                 ),
               ),
+
+              //what happens in the..
               ItemScreenTopMessage(),
-              //Heading
+
+              //'Your choice' heading
               Padding(
                 padding: EdgeInsets.only(
                   left: 20,
@@ -104,11 +110,11 @@ class _ItemScreenState extends State<ItemScreen>
                   indicatorSize: TabBarIndicatorSize.tab,
                   unselectedLabelColor: Colors.white.withOpacity(0.5),
                   labelStyle: TextStyle(
-                    fontSize: 12,
+                    fontSize: 9,
                     fontWeight: FontWeight.w700,
                   ),
                   unselectedLabelStyle: TextStyle(
-                    fontSize: 12,
+                    fontSize: 8,
                     fontWeight: FontWeight.w500,
                   ),
                   tabs: <Widget>[
@@ -136,29 +142,33 @@ class _ItemScreenState extends State<ItemScreen>
                     /*Read the line before itemList State to have better understanding
                     about what is being passed and why */
                     ItemList(
-                      category: widget.title,
-                      section: widget.section1,
+                      collection: widget.title,
+                      doc: widget.section1,
+                      fromGetStarted: widget.fromGetStarted,
                     ),
 
                     /*Read the line before itemList State to have better understanding
                     about what is being passed and why*/
                     ItemList(
-                      category: widget.title,
-                      section: widget.section2,
+                      collection: widget.title,
+                      doc: widget.section2,
+                      fromGetStarted: widget.fromGetStarted,
                     ),
 
                     /*Read the line before itemList State to have better understanding
                     about what is being passed and why*/
                     ItemList(
-                      category: widget.title,
-                      section: widget.section3,
+                      collection: widget.title,
+                      doc: widget.section3,
+                      fromGetStarted: widget.fromGetStarted,
                     ),
 
                     /*Read the line before itemList State to have better understanding
                     about what is being passed and why*/
                     ItemList(
-                      category: widget.title,
-                      section: widget.section4,
+                      collection: widget.title,
+                      doc: widget.section4,
+                      fromGetStarted: widget.fromGetStarted,
                     ),
                   ],
                 ),
@@ -177,11 +187,13 @@ Category(collection), sections(documentID), collections(sub collection) is
 passed when user navigates to different section*/
 class ItemList extends StatefulWidget {
   ItemList({
-    this.section,
-    this.category,
+    this.doc,
+    this.collection,
+    this.fromGetStarted,
   });
-  final String category;
-  final String section;
+  final String collection;
+  final String doc;
+  final bool fromGetStarted;
 
   @override
   _ItemListState createState() => _ItemListState();
@@ -190,43 +202,24 @@ class ItemList extends StatefulWidget {
 class _ItemListState extends State<ItemList> {
   final _fireStore = FirebaseFirestore.instance;
 
-  /*When container is tapped a popUpContainer is popped up with the
-  name of the product*/
-  void onTapItemContainer(String name) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black45,
-      transitionDuration: const Duration(milliseconds: 200),
-      pageBuilder: (context, animation1, animation2) {
-        return Center(
-          child: PopUpContainer(
-            name: name,
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-    final double height = MediaQuery.of(context).size.height;
-
     return Container(
       padding: EdgeInsets.only(right: 10),
       color: kBackgroundColor,
       child: StreamBuilder<QuerySnapshot>(
         stream: _fireStore
-            .collection(widget.category)
-            .doc(widget.section)
+            .collection(widget.collection)
+            .doc(widget.doc)
             .collection(kItemScreenSubCollectionName)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: Theme(
+                data: ThemeData(accentColor: kButtonColor),
+                child: CircularProgressIndicator(),
+              ),
             );
           }
           final dataLength = snapshot.data.docs.length;
@@ -240,9 +233,27 @@ class _ItemListState extends State<ItemList> {
                 //Item Container
                 return ItemContainer(
                   name: products[index]['product name'],
+                  imageUrl: products[index]['imageUrl'],
                   onTap: () {
+                    /*When item is tapped the relevant price, product id and
+                    product name is set to provider variables which will be
+                    used in order summary screen*/
+
+                    setState(() {
+                      Provider.of<ProviderData>(context, listen: false).price =
+                          products[index]['price'];
+                      Provider.of<ProviderData>(context, listen: false)
+                          .productId = products[index]['product id'];
+                      Provider.of<ProviderData>(context, listen: false)
+                          .productName = products[index]['product name'];
+                    });
+
+                    //OnTapItemContainer
                     onTapItemContainer(
-                      products[index]['product name'],
+                      name: products[index]['product name'],
+                      price: products[index]['price'],
+                      serviceName: widget.doc,
+                      imageUrl: products[index]['imageUrl'],
                     );
                   },
                 );
@@ -251,6 +262,30 @@ class _ItemListState extends State<ItemList> {
           );
         },
       ),
+    );
+  }
+
+  /*When container is tapped a popUpContainer is popped up with the
+  name of the product and price*/
+  void onTapItemContainer(
+      {String name, String price, String serviceName, String imageUrl}) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black45,
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, animation1, animation2) {
+        return Center(
+          child: PopUpContainer(
+            name: name,
+            price: price,
+            fromGetStarted: widget.fromGetStarted,
+            serviceName: serviceName,
+            imageUrl: imageUrl,
+          ),
+        );
+      },
     );
   }
 }

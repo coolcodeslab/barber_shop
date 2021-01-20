@@ -1,4 +1,5 @@
 import 'package:barber_shop/provider_data.dart';
+import 'package:barber_shop/utils/App.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class Authentication {
 
       if (user != null) {
         Navigator.pushNamed(context, HomeScreen.id);
+        App.prefs.setString("uid", user.user.uid);
       }
     } catch (e) {
       Provider.of<ProviderData>(context, listen: false).loginError = true;
@@ -49,6 +51,7 @@ class Authentication {
       if (user != null) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        App.prefs.setString("uid", uid);
       }
     } catch (e) {
       Provider.of<ProviderData>(context, listen: false).signUpError = true;
@@ -100,6 +103,7 @@ class Authentication {
       print(userName);
       if (currentUser != null) {
         Navigator.pushNamed(context, HomeScreen.id);
+        App.prefs.setString("uid", uid);
       }
     } catch (e) {
       print(e);
@@ -142,8 +146,11 @@ class Authentication {
         'userName': userName,
       });
 
+
+
       if (currentUser != null) {
         Navigator.pushNamed(context, HomeScreen.id);
+        App.prefs.setString("uid", uid);
       }
 
       assert(currentUser.uid == user.uid);

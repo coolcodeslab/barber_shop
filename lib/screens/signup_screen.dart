@@ -29,69 +29,6 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-
-  void onChangedEmail(n) {
-    email = n;
-    setState(() {
-      Provider.of<ProviderData>(context, listen: false).signUpError = false;
-    });
-  }
-
-  void onChangedPassword(n) {
-    password = n;
-  }
-
-  void onChangedUserName(n) {
-    userName = n;
-  }
-
-  /*If email and password are != null user  email, password and
-  uid is saved fireStore user collection
-  And screen is pushed to home screen*/
-
-  void onTapSignup() {
-    if (emailController.text.isEmpty ||
-        userNameController.text.isEmpty ||
-        passwordController.text.isEmpty) {
-      setState(() {
-        Provider.of<ProviderData>(context, listen: false).signUpError = true;
-      });
-      print('empty');
-    } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TermsAndServicesScreen(
-                  email: emailController.text,
-                  password: passwordController.text,
-                  userName: userNameController.text)));
-    }
-  }
-
-  void onTapGoogleSignIn() {
-    setState(() {
-      showSpinner = true;
-    });
-
-    authentication.googleSignIn(context);
-
-    setState(() {
-      showSpinner = false;
-    });
-  }
-
-  void onTapAppleSignIn() {
-    setState(() {
-      showSpinner = true;
-    });
-
-    authentication.signInWithApple(context);
-
-    setState(() {
-      showSpinner = false;
-    });
-  }
-
   @override
   void initState() {
     /*When SignUp screen is built it sets the signUpError and showSignUpSpinner
@@ -108,6 +45,8 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.height;
+
+    final isAndroid = Provider.of<ProviderData>(context).isAndroid;
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -178,6 +117,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 onChanged: onChangedPassword,
                 obscureText: true,
                 controller: passwordController,
+                maxLines: 1,
               ),
 
               //Sign up Button
@@ -186,23 +126,87 @@ class _SignupScreenState extends State<SignupScreen> {
                 onTap: onTapSignup,
               ),
 
-              //Google Sign in Button
-              SocialSignInButton(
-                onPressed: onTapGoogleSignIn,
-                buttons: Buttons.Google,
-                color: Colors.white,
-              ),
-
-              //Apple Sign in Button
-              SocialSignInButton(
-                onPressed: onTapAppleSignIn,
-                buttons: Buttons.AppleDark,
-                color: Colors.black,
-              ),
+              isAndroid
+                  ?
+                  //Google Sign in Button
+                  SocialSignInButton(
+                      onPressed: onTapGoogleSignIn,
+                      buttons: Buttons.Google,
+                      color: Colors.white,
+                    )
+                  :
+                  //Apple Sign in Button
+                  SocialSignInButton(
+                      onPressed: onTapAppleSignIn,
+                      buttons: Buttons.AppleDark,
+                      color: Colors.black,
+                    ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void onChangedEmail(n) {
+    email = n;
+    setState(() {
+      Provider.of<ProviderData>(context, listen: false).signUpError = false;
+    });
+  }
+
+  void onChangedPassword(n) {
+    password = n;
+  }
+
+  void onChangedUserName(n) {
+    userName = n;
+  }
+
+  /*If email and password are != null user  email, password and
+  uid is saved fireStore user collection
+  And screen is pushed to home screen*/
+
+  void onTapSignup() {
+    if (emailController.text.isEmpty ||
+        userNameController.text.isEmpty ||
+        passwordController.text.isEmpty) {
+      setState(() {
+        Provider.of<ProviderData>(context, listen: false).signUpError = true;
+      });
+      print('empty');
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TermsAndServicesScreen(
+                  email: emailController.text,
+                  password: passwordController.text,
+                  userName: userNameController.text)));
+    }
+  }
+
+  void onTapGoogleSignIn() {
+    setState(() {
+      showSpinner = true;
+    });
+
+    authentication.googleSignIn(context);
+
+    setState(() {
+      showSpinner = false;
+    });
+  }
+
+  void onTapAppleSignIn() {
+    setState(() {
+      showSpinner = true;
+    });
+
+    authentication.signInWithApple(context);
+
+    setState(() {
+      showSpinner = false;
+    });
   }
 }

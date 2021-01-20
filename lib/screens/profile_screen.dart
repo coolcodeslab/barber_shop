@@ -1,5 +1,6 @@
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -83,22 +84,16 @@ class ProfileCard extends StatelessWidget {
               children: [
                 //User image
                 Center(
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                    height: height * 0.15,
-                    width: width * 0.267,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            'https://p7.hiclipart.com/preview/355/848/997/computer-icons-user-profile-google-account-photos-icon-account.jpg'),
-                      ),
-                    ),
-                  ),
-                ),
-
+                    child: Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        height: height * 0.15,
+                        width: width * 0.267,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            image: DecorationImage(
+                              image: NetworkImage(kUserImage),
+                            )))),
                 //User name
                 Center(
                   child: Padding(

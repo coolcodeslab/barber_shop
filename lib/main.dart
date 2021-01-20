@@ -10,13 +10,16 @@ import 'package:barber_shop/screens/profile_screen.dart';
 import 'package:barber_shop/screens/reset_password_screen.dart';
 import 'package:barber_shop/screens/signup_screen.dart';
 import 'package:barber_shop/screens/term_and_service_screen.dart';
+import 'package:barber_shop/utils/App.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  App.prefs = await SharedPreferences.getInstance();
   runApp(MyApp());
 }
 

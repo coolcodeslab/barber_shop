@@ -38,6 +38,109 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.height;
+
+    final isAndroid = Provider.of<ProviderData>(context).isAndroid;
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: ModalProgressHUD(
+        inAsyncCall: Provider.of<ProviderData>(context).showLogInSpinner,
+        progressIndicator: Theme(
+          data: ThemeData(accentColor: kButtonColor),
+          child: CircularProgressIndicator(),
+        ),
+        child: Scaffold(
+          backgroundColor: kBackgroundColor,
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: height * 0.045,
+                ),
+
+                //Change Logo Here
+                Hero(
+                  tag: 'logo',
+                  child: Container(
+                    height: height * 0.27,
+                    width: width * 0.48,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('images/logo.png'),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(
+                  height: height * 0.06,
+                ),
+
+                //Email field
+                TextFieldWidget(
+                  hintText: 'Email',
+                  onChanged: onChangeEmail,
+                  errorText: Provider.of<ProviderData>(context).loginError
+                      ? kLogInErrorText
+                      : null,
+                  controller: emailController,
+                ),
+
+                //Password field
+                TextFieldWidget(
+                  hintText: 'Password',
+                  onChanged: onChangedPassword,
+                  obscureText: true,
+                  controller: passwordController,
+                  maxLines: 1,
+                ),
+
+                //Forgot password button
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ForgotPasswordButton(
+                    onTap: onTapForgotPasswordButton,
+                  ),
+                ),
+
+                //Login Button
+                RoundButtonWidget(
+                  title: 'login',
+                  onTap: onTapLogin,
+                ),
+
+                //Signup Button
+                RoundButtonWidget(
+                  title: 'sign up',
+                  onTap: onTapSignup,
+                ),
+
+                //Check platform before showing buttons
+                isAndroid
+                    ? //Google Sign in Button
+                    SocialSignInButton(
+                        onPressed: onTapGoogleSignIn,
+                        buttons: Buttons.Google,
+                        color: Colors.white,
+                      )
+                    //Apple Sign in Button
+                    : SocialSignInButton(
+                        onPressed: onTapAppleSignIn,
+                        buttons: Buttons.AppleDark,
+                        color: Colors.black,
+                      ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   //When email field is changes
   void onChangeEmail(n) {
     email = n;
@@ -61,9 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
   class*/
   void onTapLogin() async {
     print('logging in');
-
     authentication.logIn(context, email: email, password: password);
-
     print('done');
     //Clears the textFields
     setState(() {
@@ -87,106 +188,5 @@ class _LoginScreenState extends State<LoginScreen> {
   //Pushes to reset password screen
   void onTapForgotPasswordButton() {
     Navigator.pushNamed(context, ResetPasswordScreen.id);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.height;
-
-    final providerBool = Provider.of<ProviderData>(context).isAndroid;
-    return ModalProgressHUD(
-      inAsyncCall: Provider.of<ProviderData>(context).showLogInSpinner,
-      progressIndicator: Theme(
-        data: ThemeData(accentColor: kButtonColor),
-        child: CircularProgressIndicator(),
-      ),
-      child: Scaffold(
-        backgroundColor: kBackgroundColor,
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: height * 0.045,
-              ),
-
-              //Change Logo Here
-              Hero(
-                tag: 'logo',
-                child: Container(
-                  height: height * 0.27,
-                  width: width * 0.48,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('images/logo.png'),
-                    ),
-                  ),
-                ),
-              ),
-
-              SizedBox(
-                height: height * 0.06,
-              ),
-
-              //Email field
-              TextFieldWidget(
-                hintText: 'Email',
-                onChanged: onChangeEmail,
-                errorText: Provider.of<ProviderData>(context).loginError
-                    ? kLogInErrorText
-                    : null,
-                controller: emailController,
-              ),
-
-              //Password field
-              TextFieldWidget(
-                hintText: 'Password',
-                onChanged: onChangedPassword,
-                obscureText: true,
-                controller: passwordController,
-              ),
-
-              //Forgot password button
-              Align(
-                alignment: Alignment.centerLeft,
-                child: ForgotPasswordButton(
-                  onTap: onTapForgotPasswordButton,
-                ),
-              ),
-
-              //Login Button
-              RoundButtonWidget(
-                title: 'login',
-                onTap: onTapLogin,
-              ),
-
-              //Signup Button
-              RoundButtonWidget(
-                title: 'sign up',
-                onTap: onTapSignup,
-              ),
-
-              //Google Sign in Button
-              SocialSignInButton(
-                onPressed: onTapGoogleSignIn,
-                buttons: Buttons.Google,
-                color: Colors.white,
-              ),
-
-              //Check platform before showing buttons
-              providerBool
-                  ? null
-                  //Apple Sign in Button
-                  : SocialSignInButton(
-                      onPressed: onTapAppleSignIn,
-                      buttons: Buttons.AppleDark,
-                      color: Colors.black,
-                    ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

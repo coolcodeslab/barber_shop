@@ -1,9 +1,12 @@
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/constants.dart';
+import 'package:barber_shop/provider_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AppointmentsScreen extends StatefulWidget {
   static const id = 'appointments screen';
@@ -29,30 +32,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   @override
   void initState() {
     dateTimeNow = DateTime.now();
-    dateToday = DateTime(dateTimeNow.day, dateTimeNow.month, dateTimeNow.year);
+    dateToday = DateTime(dateTimeNow.year, dateTimeNow.month, dateTimeNow.day);
     dayToday = DateFormat('EEEE').format(dateTimeNow);
     uid = _auth.currentUser.uid;
     super.initState();
-  }
-
-  void onTapBookingCancel(
-      {String date, String uid, String bookingId, String index}) async {
-    try {
-      await _fireStore
-          .collection('bookingDates')
-          .doc(date)
-          .collection('time')
-          .doc(index)
-          .delete();
-      await _fireStore
-          .collection('users')
-          .doc(uid)
-          .collection('bookings')
-          .doc(bookingId)
-          .delete();
-    } catch (e) {
-      print(e);
-    }
   }
 
   @override
@@ -121,19 +104,24 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                   final bookings = snapshot.data.docs;
 
                   for (var eachBooking in bookings) {
+                    //name
                     final name = eachBooking['name'];
+                    //timeStamp
                     final timeStamp = eachBooking['timeStamp'];
+                    //service name
                     final service = eachBooking['service'];
+                    //time
                     final time = eachBooking['time'];
+                    //bookingIf
                     final bookingId = eachBooking['bookingId'];
-
+                    //Date only string
                     var date = timeStamp.toDate();
                     String day = DateFormat('EEEE').format(date);
                     String dayNum = DateFormat('d').format(date);
                     String monthNum = DateFormat('M').format(date);
                     String yearNum = DateFormat('y').format(date);
-
                     String dateDocString = '$dayNum-$monthNum-$yearNum';
+
                     final containerIndex = eachBooking['index'].toString();
                     final uid = eachBooking['uid'];
 
@@ -151,7 +139,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                         onTapBookingCancel(
                           date: dateDocString,
                           index: containerIndex,
-                          uid: uid,
                           bookingId: bookingId,
                         );
                       },
@@ -169,6 +156,77 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void cancelBooking({String date, String index, String bookingId}) async {
+    try {
+      await _fireStore
+          .collection('bookingDates')
+          .doc(date)
+          .collection('time')
+          .doc(index)
+          .delete();
+      await _fireStore
+          .collection('users')
+          .doc(uid)
+          .collection('bookings')
+          .doc(bookingId)
+          .delete();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void onTapBookingCancel({String date, String bookingId, String index}) async {
+    final bool isAndroid =
+        Provider.of<ProviderData>(context, listen: false).isAndroid;
+
+    //confirmation dialog box
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => isAndroid
+          ? AlertDialog(
+              title: Text("Cancel booking"),
+              content: Text("Are you sure you want to cancel Booking?"),
+              actions: [
+                FlatButton(
+                  child: Text("Cancel"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                FlatButton(
+                  child: Text("Continue"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    cancelBooking(
+                        date: date, bookingId: bookingId, index: index);
+                  },
+                ),
+              ],
+            )
+          : CupertinoAlertDialog(
+              title: Text("Cancel booking"),
+              content: Text("Are you sure you want to cancel Booking?"),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  isDefaultAction: true,
+                  child: Text("Yes"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    cancelBooking(
+                        date: date, bookingId: bookingId, index: index);
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text("No"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ),
     );
   }
 }

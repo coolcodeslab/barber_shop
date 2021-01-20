@@ -21,124 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
   final _fireStore = FirebaseFirestore.instance;
 
-  //Change the these images to firebase ones
-  List<String> serviceRow1Images = [
-    'images/sprayBottle.png',
-    'images/scissors.png',
-  ];
-  List<String> serviceRow2Images = [
-    'images/shampoo.png',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void onTapMenuIcon() {
-    _auth.signOut();
-    Navigator.pop(context);
-  }
-
-  /*When Book now button is pressed it pushes to th booking screen*/
-  void onTapBookNow() {
-    setState(() {
-      Provider.of<ProviderData>(context, listen: false).isTimePicked = false;
-    });
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddBookingScreen(
-            serviceName: kDropDownFirstValue,
-          ),
-        ));
-  }
-
-  /*Passes the relevant sections that should be displayed in the tab bar
-  and the heading
-
-  These heading and sections are passes again to itemList widget where the
-  data is retrieved from FireStore
-
-  Be careful with the values being passed because if you changed the value then
-  the value should be changed in FireStore ass well!*/
-
-  void onTapGetStarted() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ItemScreen(
-          title: 'get started',
-          section1: 'all',
-          section2: 'haircut',
-          section3: 'beard',
-          section4: 'trimming',
-          fromGetStarted: true,
-        ),
-      ),
-    );
-  }
-
-  /*Passes the relevant sections that should be displayed in the tab bar
-  and the heading*/
-  void onTapProducts() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ItemScreen(
-          title: 'products',
-          section1: 'sec1',
-          section2: 'sec2',
-          section3: 'sec5',
-          section4: 'sec4',
-          fromGetStarted: false,
-        ),
-      ),
-    );
-  }
-
-  //Pushes to booking screen
-  void onTapServiceBookNow({String serviceName}) {
-    setState(() {
-      Provider.of<ProviderData>(context, listen: false).isTimePicked = false;
-    });
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddBookingScreen(
-                  serviceName: serviceName,
-                )));
-  }
-
-  /*When service container is tapped a dialog box pops up with the name
-  description and price passed
-
-  This zooms in the relevant service and gives the user a better view */
-  void onTapServiceContainer(
-      {String name, String description, String price, String imageUrl}) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black45,
-      transitionDuration: const Duration(milliseconds: 200),
-      pageBuilder: (context, animation1, animation2) {
-        return Center(
-          //PopUpServiceContainer
-          child: PopUpServiceContainer(
-            title: name,
-            description: description,
-            price: price,
-            imageUrl: imageUrl,
-            onTapBookNow: () {
-              onTapServiceBookNow(serviceName: name);
-            },
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
@@ -167,6 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
               height: height * 0.75,
               width: width * 1.333,
             ),
+
+            //Main body
             ListView(
               children: [
                 SizedBox(
@@ -211,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                       final data = snapshot.data;
                       final name = data['userName'];
+
                       return Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
@@ -249,8 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     //Get started box
                     BoxContainer(
                       margin: EdgeInsets.only(right: 20),
-                      height: height * 0.15,
-                      width: width * 0.38,
                       title: 'Get Started',
                       imageUrl: 'images/getStartedImage.png',
                       onTap: onTapGetStarted,
@@ -258,8 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     //Products box
                     BoxContainer(
-                      height: height * 0.15,
-                      width: width * 0.38,
                       imageUrl: 'images/products.png',
                       title: 'Products',
                       onTap: onTapProducts,
@@ -300,13 +181,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         //Service Container
                         (index) => ServiceContainer(
-                          imageUrl: serviceRow1Images[index],
+                          imageUrl: serviceList[index]['imageUrl'],
                           onTap: () {
                             onTapServiceContainer(
                               name: serviceList[index]['name'],
                               description: serviceList[index]['description'],
                               price: serviceList[index]['price'],
-                              imageUrl: serviceRow1Images[index],
+                              imageUrl: serviceList[index]['imageUrl'],
                             );
                           },
                           name: serviceList[index]['name'],
@@ -316,6 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
 
+                //Row 2
                 /*Horizontal Rows which displays the service Containers from
                   FireBase service collection*/
                 StreamBuilder(
@@ -344,13 +226,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Data is determined by the the index of the current item
                                 in the list which chooses from the firebase services
                                 collection list */
-                            imageUrl: serviceRow2Images[index],
+                            imageUrl: serviceList[index]['imageUrl'],
                             onTap: () {
                               onTapServiceContainer(
                                 name: serviceList[index]['name'],
                                 description: serviceList[index]['description'],
                                 price: serviceList[index]['price'],
-                                imageUrl: serviceRow2Images[index],
+                                imageUrl: serviceList[index]['imageUrl'],
                               );
                             },
                             name: serviceList[index]['name'],
@@ -363,6 +245,98 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  /*When Book now button is pressed it pushes to th booking screen*/
+  void onTapBookNow() {
+    setState(() {
+      Provider.of<ProviderData>(context, listen: false).isTimePicked = false;
+    });
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddBookingScreen(
+            serviceName: kDropDownFirstValue,
+          ),
+        ));
+  }
+
+  /*Passes the relevant sections that should be displayed in the tab bar
+  and the heading
+
+  These heading and sections are passes again to itemList widget where the
+  data is retrieved from FireStore
+
+  Be careful with the values being passed because if you changed the value then
+  the value should be changed in FireStore ass well!*/
+
+  void onTapGetStarted() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ItemScreen(
+          title: 'get started',
+          section1: 'all',
+          section2: 'haircut',
+          section3: 'beard',
+          section4: 'trimming',
+          fromGetStarted: true,
+        ),
+      ),
+    );
+  }
+
+  /*Passes the relevant sections that should be displayed in the tab bar
+  and the heading
+
+  From getStarted bool is also passed */
+  void onTapProducts() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ItemScreen(
+          title: 'products',
+          section1: 'Accessories',
+          section2: 'Essentials',
+          section3: 'Men',
+          section4: 'Women',
+          fromGetStarted: false,
+        ),
+      ),
+    );
+  }
+
+  /*When service container is tapped a dialog box pops up with the name
+  description and price passed
+
+  This zooms in the relevant service and gives the user a better view */
+  void onTapServiceContainer(
+      {String name, String description, String price, String imageUrl}) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black45,
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, animation1, animation2) {
+        return Center(
+          //PopUpServiceContainer
+          child: PopUpServiceContainer(
+            title: name,
+            description: description,
+            price: price,
+            imageUrl: imageUrl,
+            onTapBookNow: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          AddBookingScreen(serviceName: name)));
+            },
+          ),
+        );
+      },
     );
   }
 }

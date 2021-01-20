@@ -41,7 +41,8 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   @override
   void initState() {
     serviceName = widget.serviceName;
-
+    Provider.of<ProviderData>(context, listen: false).isTimePicked = false;
+    print(Provider.of<ProviderData>(context, listen: false).isTimePicked);
     super.initState();
   }
 
@@ -228,7 +229,8 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                       );
                     },
                     isTimePicked:
-                        Provider.of<ProviderData>(context).isTimePicked,
+                        Provider.of<ProviderData>(context, listen: false)
+                            .isTimePicked,
                   ),
 
                   //Dropdown Services
