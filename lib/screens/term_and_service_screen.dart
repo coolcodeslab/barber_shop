@@ -99,7 +99,7 @@ class _TermsAndServicesScreenState extends State<TermsAndServicesScreen> {
                   children: [
                     Text(
                       kTermsAndServices,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.black),
                     ),
                   ],
                 )),

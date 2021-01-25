@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         body: Stack(
           children: [
-            //BackGround Design
+//            BackGround Design
             BackGroundDesign(
               height: height * 0.75,
               width: width * 1.333,
@@ -78,12 +78,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Hey',
                     style: TextStyle(
                       fontSize: 30,
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.black.withOpacity(0.5),
                     ),
                   ),
                 ),
 
-                //UserName
+//                UserName
                 FutureBuilder(
                     future: _fireStore
                         .collection('users')

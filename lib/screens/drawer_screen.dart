@@ -3,7 +3,6 @@ import 'package:barber_shop/screens/bookings_screen.dart';
 import 'package:barber_shop/screens/login_screen.dart';
 import 'package:barber_shop/screens/order_history_screen.dart';
 import 'package:barber_shop/screens/profile_screen.dart';
-import 'package:barber_shop/utils/App.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,7 +27,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
     return Container(
       width: width * 0.36,
-      color: Color(0xff4D4A56),
+      color: Colors.white,
+//      0xff4D4A56
       child: Column(
         children: [
           SizedBox(
@@ -157,7 +157,6 @@ class DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: onTap,
@@ -167,10 +166,11 @@ class DrawerItem extends StatelessWidget {
         child: Center(
           child: Text(
             name,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
           ),
         ),
-        color: Color(0xff4D4A56),
+        color: Colors.white,
+//          0xff4D4A56
       ),
     );
   }

@@ -90,12 +90,12 @@ class _PickATimeScreenState extends State<PickATimeScreen>
                 padding: EdgeInsets.all(10),
                 child: TabBar(
                   indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: CircleTabIndicator(color: Colors.white, radius: 4),
+                  indicator: CircleTabIndicator(color: Colors.black, radius: 4),
                   controller: tabController,
                   isScrollable: true,
                   indicatorColor: Colors.transparent,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.white.withOpacity(0.5),
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.black.withOpacity(0.5),
                   labelStyle: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -328,6 +328,10 @@ class _TimeSelectorScreenState extends State<TimeSelectorScreen> {
                                   .index = index;
                               Provider.of<ProviderData>(context, listen: false)
                                   .day = widget.day;
+
+                              print(Provider.of<ProviderData>(context,
+                                      listen: false)
+                                  .time);
                             });
                           },
                         );

@@ -20,6 +20,7 @@ class _AddressBookState extends State<AddressBook> {
   Map userData = Map();
   bool isLoading = false;
   String uid;
+  bool error = false;
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _AddressBookState extends State<AddressBook> {
             controller: _textEditingController,
             maxLines: 6,
             maxLength: 150,
+            errorText: error ? 'please enter an address' : null,
           ),
           Align(
             alignment: Alignment.center,
@@ -77,6 +79,7 @@ class _AddressBookState extends State<AddressBook> {
     if (mounted) {
       setState(() {
         isLoading = true;
+        error = false;
       });
     }
     if (_textEditingController.text == userData['address']) {
@@ -94,6 +97,14 @@ class _AddressBookState extends State<AddressBook> {
           ),
         ),
       );
+    } else if (_textEditingController.text.isEmpty) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          error = true;
+        });
+      }
+      return;
     } else {
       try {
         FirebaseFirestore.instance

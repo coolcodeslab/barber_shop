@@ -1,10 +1,8 @@
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/constants.dart';
 import 'package:barber_shop/provider_data.dart';
-import 'package:barber_shop/screens/address_book.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 /*
@@ -102,13 +100,13 @@ class _ItemScreenState extends State<ItemScreen>
               Padding(
                 padding: EdgeInsets.all(10),
                 child: TabBar(
-                  indicator: CircleTabIndicator(color: Colors.white, radius: 4),
+                  indicator: CircleTabIndicator(color: Colors.black, radius: 4),
                   controller: tabController,
                   isScrollable: false,
                   indicatorColor: Colors.white,
-                  labelColor: Colors.white,
+                  labelColor: Colors.black,
                   indicatorSize: TabBarIndicatorSize.tab,
-                  unselectedLabelColor: Colors.white.withOpacity(0.5),
+                  unselectedLabelColor: Colors.black.withOpacity(0.5),
                   labelStyle: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w700,

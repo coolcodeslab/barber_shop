@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:barber_shop/auth_service.dart';
 import 'package:barber_shop/provider_data.dart';
 import 'package:barber_shop/constants.dart';
@@ -7,7 +5,6 @@ import 'package:barber_shop/screens/term_and_service_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:flutter_signin_button/button_list.dart';
-import 'package:flutter_signin_button/button_view.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:provider/provider.dart';
 
@@ -84,7 +81,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   width: width * 0.48,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('images/logo.png'),
+                      image: AssetImage('images/PLUCK CUTZ.png'),
                     ),
                   ),
                 ),

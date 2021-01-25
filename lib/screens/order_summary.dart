@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/constants.dart';
 import 'package:barber_shop/provider_data.dart';
-import 'package:barber_shop/utils/App.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +28,8 @@ class _OrderSummaryState extends State<OrderSummary> {
     uid = _auth.currentUser.uid;
     StripePayment.setOptions(StripeOptions(
         publishableKey: StripApiKey,
-        merchantId: "Test",
-        androidPayMode: 'test'));
+        merchantId: "coolcodes01@gmail.com",
+        androidPayMode: ''));
     super.initState();
   }
 
@@ -101,7 +98,7 @@ class _OrderSummaryState extends State<OrderSummary> {
                     currencyCode: 'USD',
                     items: [
                       ApplePayItem(
-                        label: 'Test',
+                        label: '$productName',
                         amount: '$price', // TODO PASS AMT AND SET UP HERE
                       )
                     ],
@@ -176,11 +173,11 @@ class OrderSummaryTile extends StatelessWidget {
     return ListTile(
       title: Text(
         title,
-        style: TextStyle(color: Colors.white38),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
         subTitle,
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Colors.black),
       ),
     );
   }

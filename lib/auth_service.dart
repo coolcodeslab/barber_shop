@@ -19,7 +19,6 @@ class Authentication {
   Provider logInError variable is set to false(Error text is shown)*/
 
   void logIn(context, {String email, String password}) async {
-    Provider.of<ProviderData>(context, listen: false).showLogInSpinner = true;
     try {
       final user = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -30,10 +29,7 @@ class Authentication {
       }
     } catch (e) {
       Provider.of<ProviderData>(context, listen: false).loginError = true;
-      print(
-          'error login ${Provider.of<ProviderData>(context, listen: false).loginError}');
     }
-    Provider.of<ProviderData>(context, listen: false).showLogInSpinner = false;
   }
 
   void singUp(context, {String email, String password, String userName}) async {
@@ -93,12 +89,14 @@ class Authentication {
 
       final uid = _auth.currentUser.uid;
       final userName = _auth.currentUser.displayName;
+      final imageUrl = _auth.currentUser.photoURL;
 
       await _fireStore.collection('users').doc(uid).set({
         'email': _auth.currentUser.email,
         'password': 'Signed in with Apple',
         'uid': uid,
         'userName': userName,
+        'imageUrl': imageUrl,
       });
       print(userName);
       if (currentUser != null) {
@@ -138,15 +136,15 @@ class Authentication {
 
       final uid = _auth.currentUser.uid;
       final userName = _auth.currentUser.displayName;
+      final imageUrl = _auth.currentUser.photoURL;
 
       await _fireStore.collection('users').doc(uid).set({
         'email': _auth.currentUser.email,
         'password': 'Signed in with google',
         'uid': uid,
         'userName': userName,
+        'imageUrl': imageUrl,
       });
-
-
 
       if (currentUser != null) {
         Navigator.pushNamed(context, HomeScreen.id);

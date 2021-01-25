@@ -28,15 +28,18 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController mobileNoController = TextEditingController();
 
-  String name;
-  String mobileNo;
   bool showSpinner = false;
   bool error = false;
   Map<String, dynamic> mapResponseFromPickATimeScreen;
 
+  String uid;
+
   /*Starting name for the dropdown menu should be the name of an the item in
   the list, if not the app will crash */
   String serviceName = kDropDownFirstValue;
+
+  //calling setState so that the page refreshes
+  Color color = Colors.white;
 
   @override
   void initState() {
@@ -44,107 +47,8 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
     Provider.of<ProviderData>(context, listen: false).isTimePicked = false;
     print(Provider.of<ProviderData>(context, listen: false).isTimePicked);
     super.initState();
-  }
-
-  void onChangedName(n) {
-    name = n;
-    setState(() {
-      error = false;
-    });
-  }
-
-  void onChangedMobileNo(n) {
-    mobileNo = n;
-    setState(() {
-      error = false;
-    });
-  }
-
-  /*A booking is saved in the current users booking collection and in common
-  booking collection which will be displayed in the admin bookings screen
-
-  Name, service, time, mobile no, uid and time stamp of the date booked in
-  (2 January 2021) format will be saved inside bookings
-  collections
-
-  A random booking Id is generated using randomAlphaNumeric package
-
-  Checks if name == null , Mobile no == null and pick a time == null
-
-  The screen pops to Home Screen when the booking is success*/
-  void onTapBookNow() async {
-    setState(() {
-      showSpinner = true;
-      nameController.clear();
-      mobileNoController.clear();
-    });
-    if (name == null ||
-        mobileNo == null ||
-        Provider.of<ProviderData>(context, listen: false).isTimePicked ==
-            false) {
-      setState(() {
-        error = true;
-        showSpinner = false;
-      });
-      return;
-    } else {
-      final String bookingId = randomAlphaNumeric(9);
-      final String uid = _auth.currentUser.uid;
-
-      //Saves booking inside user collection
-      await _fireStore
-          .collection('users')
-          .doc(uid)
-          .collection('bookings')
-          .doc(bookingId)
-          .set(
-        {
-          'name': name,
-          'service': serviceName,
-          'time': mapResponseFromPickATimeScreen['time'],
-          'mobileNo': mobileNo,
-          'uid': uid,
-          'timeStamp': mapResponseFromPickATimeScreen['dateTime'],
-          'bookingId': bookingId,
-          'isBooked': true,
-          'index': mapResponseFromPickATimeScreen['index'],
-        },
-      );
-
-      //Adds time Stamp to the field inside the date document
-      await _fireStore
-          .collection('bookingDates')
-          .doc(
-              '${mapResponseFromPickATimeScreen['date']}-${mapResponseFromPickATimeScreen['month']}-${mapResponseFromPickATimeScreen['year']}')
-          .set({
-        'timeStamp': mapResponseFromPickATimeScreen['dateTime'],
-      });
-
-      //Saves booking inside booking dates collection
-      await _fireStore
-          .collection('bookingDates')
-          .doc(
-              '${mapResponseFromPickATimeScreen['date']}-${mapResponseFromPickATimeScreen['month']}-${mapResponseFromPickATimeScreen['year']}')
-          .collection('time')
-          .doc('${mapResponseFromPickATimeScreen['index']}')
-          .set({
-        'name': name,
-        'service': serviceName,
-        'mobileNo': mobileNo,
-        'uid': uid,
-        'timeStamp': mapResponseFromPickATimeScreen['dateTime'],
-        'bookingId': bookingId,
-        'isBooked': true,
-        'time': '${mapResponseFromPickATimeScreen['time']}',
-        'index': mapResponseFromPickATimeScreen['index'],
-        'isCompleted': false,
-      });
-
-      Navigator.pushNamed(context, HomeScreen.id);
-    }
-    setState(() {
-      showSpinner = false;
-    });
+    uid = _auth.currentUser.uid;
+    fetchNameAndNumber();
   }
 
   @override
@@ -205,7 +109,6 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                   //Name field
                   TextFieldWidget(
                     hintText: 'name',
-                    onChanged: onChangedName,
                     errorText: error ? 'please enter a value' : null,
                     controller: nameController,
                   ),
@@ -213,7 +116,6 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                   //Mobile no field
                   TextFieldWidget(
                     hintText: 'mobile no',
-                    onChanged: onChangedMobileNo,
                     controller: mobileNoController,
                     errorText: error ? 'please enter a value' : null,
                   ),
@@ -227,7 +129,17 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                           builder: (context) => PickATimeScreen(),
                         ),
                       );
+
+                      //calling setState the refresh the page
+                      setState(() {
+                        color =
+                            color == Colors.white ? Colors.grey : Colors.white;
+                      });
                     },
+                    title: Provider.of<ProviderData>(context, listen: false)
+                            .isTimePicked
+                        ? ' ${Provider.of<ProviderData>(context, listen: false).time}, ${Provider.of<ProviderData>(context, listen: false).day} /${Provider.of<ProviderData>(context, listen: false).month}'
+                        : 'pick a time',
                     isTimePicked:
                         Provider.of<ProviderData>(context, listen: false)
                             .isTimePicked,
@@ -278,40 +190,123 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
       ),
     );
   }
-}
 
-class PickATimeButton extends StatelessWidget {
-  PickATimeButton({this.onTap, this.isTimePicked});
-  final Function onTap;
-  final bool isTimePicked;
+  void fetchNameAndNumber() async {
+    setState(() {
+      showSpinner = true;
+    });
 
-  @override
-  Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-    final double height = MediaQuery.of(context).size.height;
+    try {
+      _fireStore.collection('users').doc(uid).get().then((value) {
+        if (mounted)
+          setState(() {
+            showSpinner = false;
+            nameController.text = value.data()['userName'] ?? '';
+            mobileNoController.text = value.data()['mobileNumber'] ?? '';
+          });
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: EdgeInsets.only(left: 20, right: 20, top: 15),
-        margin: EdgeInsets.only(
-          bottom: 20,
-          left: 30,
-          right: 30,
-        ),
-        height: height * 0.067,
-        width: width,
-        child: Text(
-          'pick a time',
-          style: TextStyle(
-            color: isTimePicked ? Colors.white : Colors.red,
-          ),
-        ),
-      ),
-    );
+  /*A booking is saved in the current users booking collection and in common
+  booking collection which will be displayed in the admin bookings screen
+
+  Name, service, time, mobile no, uid and time stamp of the date booked in
+  (2 January 2021) format will be saved inside bookings
+  collections
+
+  A random booking Id is generated using randomAlphaNumeric package
+
+  Checks if name == null , Mobile no == null and pick a time == null
+
+  The screen pops to Home Screen when the booking is success*/
+  void onTapBookNow() async {
+    if (nameController.text.isEmpty ||
+        mobileNoController.text.isEmpty ||
+        Provider.of<ProviderData>(context, listen: false).isTimePicked ==
+            false) {
+      print('failed');
+      setState(() {
+        error = true;
+        showSpinner = false;
+
+        nameController.clear();
+        mobileNoController.clear();
+      });
+      return;
+    } else {
+      final String bookingId = randomAlphaNumeric(9);
+      final String uid = _auth.currentUser.uid;
+
+      try {
+        _fireStore.collection('users').doc(uid).update({
+          'mobileNumber': mobileNoController.text,
+        });
+
+        //Saves booking inside user collection
+        _fireStore
+            .collection('users')
+            .doc(uid)
+            .collection('bookings')
+            .doc(bookingId)
+            .set(
+          {
+            'name': nameController.text,
+            'service': serviceName,
+            'time': mapResponseFromPickATimeScreen['time'],
+            'mobileNo': mobileNoController.text,
+            'uid': uid,
+            'timeStamp': mapResponseFromPickATimeScreen['dateTime'],
+            'bookingId': bookingId,
+            'isBooked': true,
+            'index': mapResponseFromPickATimeScreen['index'],
+          },
+        );
+
+        //Adds time Stamp to the field inside the date document
+        _fireStore
+            .collection('bookingDates')
+            .doc(
+                '${mapResponseFromPickATimeScreen['date']}-${mapResponseFromPickATimeScreen['month']}-${mapResponseFromPickATimeScreen['year']}')
+            .set({
+          'timeStamp': mapResponseFromPickATimeScreen['dateTime'],
+        });
+
+        //Saves booking inside booking dates collection
+        _fireStore
+            .collection('bookingDates')
+            .doc(
+                '${mapResponseFromPickATimeScreen['date']}-${mapResponseFromPickATimeScreen['month']}-${mapResponseFromPickATimeScreen['year']}')
+            .collection('time')
+            .doc('${mapResponseFromPickATimeScreen['index']}')
+            .set({
+          'name': nameController.text,
+          'service': serviceName,
+          'mobileNo': mobileNoController.text,
+          'uid': uid,
+          'timeStamp': mapResponseFromPickATimeScreen['dateTime'],
+          'bookingId': bookingId,
+          'isBooked': true,
+          'time': '${mapResponseFromPickATimeScreen['time']}',
+          'index': mapResponseFromPickATimeScreen['index'],
+          'isCompleted': false,
+        });
+        if (mounted) {
+          setState(() {
+            showSpinner = false;
+          });
+        }
+        Navigator.pushNamed(context, HomeScreen.id);
+      } catch (e) {
+        print(e);
+        if (mounted) {
+          setState(() {
+            showSpinner = false;
+          });
+        }
+      }
+    }
   }
 }

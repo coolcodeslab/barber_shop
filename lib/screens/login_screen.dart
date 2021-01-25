@@ -70,14 +70,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: width * 0.48,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('images/logo.png'),
+                        image: AssetImage('images/PLUCK CUTZ.png'),
                       ),
                     ),
                   ),
                 ),
 
                 SizedBox(
-                  height: height * 0.06,
+                  height: height * 0.03,
                 ),
 
                 //Email field
@@ -163,11 +163,17 @@ class _LoginScreenState extends State<LoginScreen> {
   /*When login button is pressed it runs the login method in authentication
   class*/
   void onTapLogin() async {
-    print('logging in');
+    setState(() {
+      Provider.of<ProviderData>(context, listen: false).showLogInSpinner = true;
+    });
     authentication.logIn(context, email: email, password: password);
     print('done');
+
     //Clears the textFields
     setState(() {
+      Provider.of<ProviderData>(context, listen: false).showLogInSpinner =
+          false;
+
       emailController.clear();
       passwordController.clear();
     });

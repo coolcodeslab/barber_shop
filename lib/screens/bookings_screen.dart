@@ -123,7 +123,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                     String dateDocString = '$dayNum-$monthNum-$yearNum';
 
                     final containerIndex = eachBooking['index'].toString();
-                    final uid = eachBooking['uid'];
 
                     if (day == dayToday) {
                       day = 'Today';

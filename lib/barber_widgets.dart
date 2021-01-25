@@ -313,7 +313,8 @@ class PopUpContainer extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: Color(0xff4D4A56),
+          color: Colors.white,
+//            0xff4D4A56
         ),
         width: width * 0.693,
         height: height * 0.55,
@@ -337,7 +338,7 @@ class PopUpContainer extends StatelessWidget {
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  color: Colors.black,
                   fontSize: 30,
                 ),
               ),
@@ -422,7 +423,7 @@ class ItemContainer extends StatelessWidget {
             Text(
               name,
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 12,
               ),
             )
@@ -495,7 +496,9 @@ class PopUpServiceContainer extends StatelessWidget {
               height: height * 0.285,
               child: Text(
                 description,
-                style: kPopUpServiceContainerDescriptionStyle,
+                style: kPopUpServiceContainerDescriptionStyle.copyWith(
+                  color: Colors.black.withOpacity(0.5),
+                ),
               ),
             ),
             Row(
@@ -514,7 +517,8 @@ class PopUpServiceContainer extends StatelessWidget {
         height: height * 0.555,
         width: width * 0.853,
         decoration: BoxDecoration(
-          color: Color(0xff7F7B78),
+          color: Colors.white,
+//            0xff7F7B78
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(25),
             topLeft: Radius.circular(25),
@@ -537,7 +541,7 @@ class TimeContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    final double height = MediaQuery.of(context).size.height;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -548,7 +552,7 @@ class TimeContainer extends StatelessWidget {
         child: Center(
           child: Text(
             time,
-            style: TextStyle(color: isBooked ? Colors.black : Colors.white70),
+            style: TextStyle(color: isBooked ? Colors.red : Colors.black),
           ),
         ),
         width: width * 0.027,
@@ -568,7 +572,6 @@ class SocialSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.height;
 
     return Container(
       height: height * 0.06,
@@ -636,7 +639,7 @@ class BackGroundDesign extends StatelessWidget {
         color: Colors.transparent,
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: AssetImage('images/roundDesign2.png'),
+          image: AssetImage('images/roundDesign3.png'),
         ),
       ),
     );
@@ -671,7 +674,8 @@ class BookingCard extends StatelessWidget {
       height: height * 0.3,
       width: width * 0.773,
       decoration: BoxDecoration(
-        color: Color(0xff7F7B78),
+        color: Colors.white,
+//          0xff7F7B78
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
@@ -686,7 +690,7 @@ class BookingCard extends StatelessWidget {
             child: Text(
               '$service at $time, $day',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
@@ -773,7 +777,7 @@ class ForgotPasswordButton extends StatelessWidget {
           bottom: 20,
         ),
         child: Text(
-          'forgot password',
+          'forgot password?',
           style: TextStyle(
             color: Colors.grey,
           ),
@@ -851,7 +855,7 @@ class ItemScreenTopMessage extends StatelessWidget {
           Container(
             width: 2,
             height: height * 0.105,
-            color: Colors.grey,
+            color: Colors.black.withOpacity(0.5),
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
@@ -863,28 +867,28 @@ class ItemScreenTopMessage extends StatelessWidget {
                   'What happens in the',
                   style: GoogleFonts.karla(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.black.withOpacity(0.5),
                   ),
                 ),
                 Text(
                   'Barber shop',
                   style: GoogleFonts.dancingScript(
                     fontSize: 20,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
                 Text(
                   'Stays in the',
                   style: GoogleFonts.karla(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.black.withOpacity(0.5),
                   ),
                 ),
                 Text(
                   'Barber shop',
                   style: GoogleFonts.dancingScript(
                     fontSize: 20,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -913,6 +917,43 @@ class ItemScreenTopMessage extends StatelessWidget {
           topRight: Radius.circular(20),
           topLeft: Radius.circular(20),
           bottomLeft: Radius.circular(20),
+        ),
+      ),
+    );
+  }
+}
+
+class PickATimeButton extends StatelessWidget {
+  PickATimeButton({this.onTap, this.isTimePicked, this.title});
+  final Function onTap;
+  final bool isTimePicked;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.only(left: 20, right: 20, top: 15),
+        margin: EdgeInsets.only(
+          bottom: 20,
+          left: 30,
+          right: 30,
+        ),
+        height: height * 0.067,
+        width: width,
+        child: Text(
+          title,
+          style: TextStyle(
+            color: isTimePicked ? Colors.white : Colors.red,
+          ),
         ),
       ),
     );
