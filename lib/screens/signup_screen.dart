@@ -28,13 +28,11 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController userNameController = TextEditingController();
   @override
   void initState() {
-    /*When SignUp screen is built it sets the signUpError and showSignUpSpinner
-     Provider variables to false
-
-     This way the errorText and loading spinner is not shown*/
+    ///When SignUp screen is built it sets the signUpError and showSignUpSpinner
+    ///Provider variables to false
+    ///This way the errorText and loading spinner is not shown*/
 
     Provider.of<ProviderData>(context, listen: false).signUpError = false;
-    Provider.of<ProviderData>(context, listen: false).showSignUpSpinner = false;
     super.initState();
   }
 
@@ -47,99 +45,94 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      body: ModalProgressHUD(
-        inAsyncCall: Provider.of<ProviderData>(context).showSignUpSpinner,
-        progressIndicator: Theme(
-          data: ThemeData(accentColor: kButtonColor),
-          child: CircularProgressIndicator(),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: height * 0.03,
-              ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: height * 0.03,
+            ),
 
-              //Back button
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    BackButton(
-                      color: kButtonColor,
-                    ),
-                  ],
-                ),
+            ///Back button
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  BackButton(
+                    color: kButtonColor,
+                  ),
+                ],
               ),
+            ),
 
-              //Logo
-              Hero(
-                tag: 'logo',
-                child: Container(
-                  height: height * 0.27,
-                  width: width * 0.48,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('images/PLUCK CUTZ.png'),
-                    ),
+            ///Logo
+            Hero(
+              tag: 'logo',
+              child: Container(
+                height: height * 0.27,
+                width: width * 0.48,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/PLUCK CUTZ.png'),
                   ),
                 ),
               ),
+            ),
 
-              SizedBox(
-                height: height * 0.007,
-              ),
+            SizedBox(
+              height: height * 0.007,
+            ),
 
-              //Email field
-              TextFieldWidget(
-                hintText: 'email',
-                onChanged: onChangedEmail,
-                controller: emailController,
-                errorText: Provider.of<ProviderData>(context).signUpError
-                    ? kSignUpErrorText
-                    : null,
-              ),
+            ///Email field
+            TextFieldWidget(
+              hintText: 'email',
+              onChanged: onChangedEmail,
+              controller: emailController,
+              errorText: Provider.of<ProviderData>(context).signUpError
+                  ? kSignUpErrorText
+                  : null,
+            ),
 
-              //UserName field
-              TextFieldWidget(
-                hintText: 'user name',
-                onChanged: onChangedUserName,
-                controller: userNameController,
-              ),
+            ///UserName field
+            TextFieldWidget(
+              hintText: 'user name',
+              onChanged: onChangedUserName,
+              controller: userNameController,
+            ),
 
-              //Password field
-              TextFieldWidget(
-                hintText: 'password',
-                onChanged: onChangedPassword,
-                obscureText: true,
-                controller: passwordController,
-                maxLines: 1,
-              ),
+            ///Password field
+            TextFieldWidget(
+              hintText: 'password',
+              onChanged: onChangedPassword,
+              obscureText: true,
+              controller: passwordController,
+              maxLines: 1,
+            ),
 
-              //Sign up Button
-              RoundButtonWidget(
-                title: 'sign up',
-                onTap: onTapSignup,
-              ),
+            ///Sign up Button
+            RoundButtonWidget(
+              title: 'sign up',
+              onTap: onTapSignUp,
+            ),
 
-              isAndroid
-                  ?
-                  //Google Sign in Button
-                  SocialSignInButton(
-                      onPressed: onTapGoogleSignIn,
-                      buttons: Buttons.Google,
-                      color: Colors.white,
-                    )
-                  :
-                  //Apple Sign in Button
-                  SocialSignInButton(
-                      onPressed: onTapAppleSignIn,
-                      buttons: Buttons.AppleDark,
-                      color: Colors.black,
-                    ),
-            ],
-          ),
+            isAndroid
+                ?
+
+                ///Google Sign in Button
+                SocialSignInButton(
+                    onPressed: onTapGoogleSignIn,
+                    buttons: Buttons.Google,
+                    color: Colors.white,
+                  )
+                :
+
+                ///Apple Sign in Button
+                SocialSignInButton(
+                    onPressed: onTapAppleSignIn,
+                    buttons: Buttons.AppleDark,
+                    color: Colors.black,
+                  ),
+          ],
         ),
       ),
     );
@@ -160,11 +153,11 @@ class _SignupScreenState extends State<SignupScreen> {
     userName = n;
   }
 
-  /*If email and password are != null user  email, password and
-  uid is saved fireStore user collection
-  And screen is pushed to home screen*/
+  /// If email and password are != null user  email, password and
+  ///uid is saved fireStore user collection
+  ///And screen is pushed to home screen
 
-  void onTapSignup() {
+  void onTapSignUp() async {
     if (emailController.text.isEmpty ||
         userNameController.text.isEmpty ||
         passwordController.text.isEmpty) {
@@ -173,37 +166,29 @@ class _SignupScreenState extends State<SignupScreen> {
       });
       print('empty');
     } else {
-      Navigator.push(
+      final response = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => TermsAndServicesScreen(
                   email: emailController.text,
                   password: passwordController.text,
                   userName: userNameController.text)));
+
+      if (response) {
+        setState(() {
+          Provider.of<ProviderData>(context, listen: false).signUpError = true;
+        });
+      } else {
+        print('nutin');
+      }
     }
   }
 
   void onTapGoogleSignIn() {
-    setState(() {
-      showSpinner = true;
-    });
-
     authentication.googleSignIn(context);
-
-    setState(() {
-      showSpinner = false;
-    });
   }
 
   void onTapAppleSignIn() {
-    setState(() {
-      showSpinner = true;
-    });
-
     authentication.signInWithApple(context);
-
-    setState(() {
-      showSpinner = false;
-    });
   }
 }

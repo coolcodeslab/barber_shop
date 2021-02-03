@@ -107,10 +107,7 @@ class _AddressBookState extends State<AddressBook> {
       return;
     } else {
       try {
-        FirebaseFirestore.instance
-            .collection("users")
-            .doc(App.prefs.getString("uid"))
-            .update({
+        FirebaseFirestore.instance.collection("users").doc(uid).update({
           "address": _textEditingController.text,
         }).then((value) {
           // Push To Order Summary

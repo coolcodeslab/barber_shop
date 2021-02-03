@@ -67,7 +67,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
         body: SingleChildScrollView(
           child: Stack(
             children: [
-              //BackGround design
+              ///BackGround design
               BackGroundDesign(
                 height: height * 0.45,
                 width: width * 1.333,
@@ -79,7 +79,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                     height: height * 0.045,
                   ),
 
-                  //Back button
+                  ///Back button
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
@@ -87,12 +87,15 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                       children: [
                         BackButton(
                           color: kButtonColor,
+                          onPressed: () {
+                            Navigator.pop(context, false);
+                          },
                         ),
                       ],
                     ),
                   ),
 
-                  //Add Booking Heading
+                  ///Add Booking Heading
                   Padding(
                     padding: EdgeInsets.only(
                       left: 20,
@@ -106,7 +109,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                     height: height * 0.045,
                   ),
 
-                  //Name field
+                  ///Name field
                   TextFieldWidget(
                     hintText: 'name',
                     errorText: error ? 'please enter a value' : null,
@@ -223,6 +226,8 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
 
   The screen pops to Home Screen when the booking is success*/
   void onTapBookNow() async {
+    print('done');
+
     if (nameController.text.isEmpty ||
         mobileNoController.text.isEmpty ||
         Provider.of<ProviderData>(context, listen: false).isTimePicked ==
@@ -298,7 +303,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
             showSpinner = false;
           });
         }
-        Navigator.pushNamed(context, HomeScreen.id);
+        Navigator.pop(context, true);
       } catch (e) {
         print(e);
         if (mounted) {

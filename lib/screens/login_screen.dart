@@ -1,11 +1,15 @@
 import 'package:barber_shop/provider_data.dart';
 import 'package:barber_shop/constants.dart';
+import 'package:barber_shop/screens/home_screen.dart';
 import 'package:barber_shop/screens/reset_password_screen.dart';
 import 'package:barber_shop/screens/signup_screen.dart';
 import 'package:barber_shop/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +23,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   Authentication authentication = Authentication();
 
+  final _auth = FirebaseAuth.instance;
+
   String email;
   String password;
   bool passedVar;
@@ -29,12 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    /*When login screen is built it sets the loginError and showLogInSpinner
-     Provider variables to false
-
-     This way the errorText and loading spinner is not shown*/
     Provider.of<ProviderData>(context, listen: false).loginError = false;
-    Provider.of<ProviderData>(context, listen: false).showLogInSpinner = false;
     super.initState();
   }
 
@@ -47,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: ModalProgressHUD(
-        inAsyncCall: Provider.of<ProviderData>(context).showLogInSpinner,
+        inAsyncCall: showSpinner,
         progressIndicator: Theme(
           data: ThemeData(accentColor: kButtonColor),
           child: CircularProgressIndicator(),
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: height * 0.045,
                 ),
 
-                //Change Logo Here
+                ///Logo
                 Hero(
                   tag: 'logo',
                   child: Container(
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: height * 0.03,
                 ),
 
-                //Email field
+                ///Email field
                 TextFieldWidget(
                   hintText: 'Email',
                   onChanged: onChangeEmail,
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: emailController,
                 ),
 
-                //Password field
+                ///Password field
                 TextFieldWidget(
                   hintText: 'Password',
                   onChanged: onChangedPassword,
@@ -99,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   maxLines: 1,
                 ),
 
-                //Forgot password button
+                ///Forgot password button
                 Align(
                   alignment: Alignment.centerLeft,
                   child: ForgotPasswordButton(
@@ -107,27 +108,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                //Login Button
+                ///Login Button
                 RoundButtonWidget(
                   title: 'login',
                   onTap: onTapLogin,
                 ),
 
-                //Signup Button
+                ///Signup Button
                 RoundButtonWidget(
                   title: 'sign up',
                   onTap: onTapSignup,
                 ),
 
-                //Check platform before showing buttons
+                ///Check platform before showing buttons
+
+                ///Google Sign in Button
                 isAndroid
-                    ? //Google Sign in Button
-                    SocialSignInButton(
+                    ? SocialSignInButton(
                         onPressed: onTapGoogleSignIn,
                         buttons: Buttons.Google,
                         color: Colors.white,
                       )
-                    //Apple Sign in Button
+
+                    ///Apple Sign in Button
                     : SocialSignInButton(
                         onPressed: onTapAppleSignIn,
                         buttons: Buttons.AppleDark,
@@ -141,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  //When email field is changes
+  ///When email field is changes
   void onChangeEmail(n) {
     email = n;
 
@@ -150,48 +153,54 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  //When password is changes
+  ///When password is changes
   void onChangedPassword(n) {
     password = n;
   }
 
-  //When sign in button is tapped it pushes to the next screen
+  ///When sign in button is tapped it pushes to the next screen
   void onTapSignup() {
     Navigator.pushNamed(context, SignupScreen.id);
   }
 
-  /*When login button is pressed it runs the login method in authentication
-  class*/
+  ///Spinner is only shown for login
   void onTapLogin() async {
     setState(() {
-      Provider.of<ProviderData>(context, listen: false).showLogInSpinner = true;
+      showSpinner = true;
     });
-    authentication.logIn(context, email: email, password: password);
-    print('done');
 
-    //Clears the textFields
+    try {
+      final user = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+
+      if (user != null) {
+        Navigator.pushNamed(context, HomeScreen.id);
+      }
+    } catch (e) {
+      print(e);
+    }
+
     setState(() {
-      Provider.of<ProviderData>(context, listen: false).showLogInSpinner =
-          false;
-
-      emailController.clear();
-      passwordController.clear();
+      showSpinner = false;
     });
+
+    emailController.clear();
+    passwordController.clear();
   }
 
   /*When google sign in button is pressed it runs the signIn method in
   authentication class*/
-  void onTapGoogleSignIn() {
+  void onTapGoogleSignIn() async {
     authentication.googleSignIn(context);
   }
 
-  /*When apple sign in button is pressed it runs the signIn method in
-  authentication class*/
+  ///When apple sign in button is pressed it runs the signIn method in
+  /// authentication class
   void onTapAppleSignIn() {
     authentication.signInWithApple(context);
   }
 
-  //Pushes to reset password screen
+  ///Pushes to reset password screen
   void onTapForgotPasswordButton() {
     Navigator.pushNamed(context, ResetPasswordScreen.id);
   }

@@ -1,4 +1,5 @@
 import 'package:barber_shop/constants.dart';
+import 'package:barber_shop/provider_data.dart';
 import 'package:barber_shop/screens/add_booking_screen.dart';
 import 'package:barber_shop/screens/address_book.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 /*round button used in all parts of the app with dynamic title,
 * height and width */
@@ -229,14 +231,6 @@ class ServiceContainer extends StatelessWidget {
         margin: EdgeInsets.only(right: 10, left: 10),
         width: width * 0.347,
         decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 3,
-              blurRadius: 7,
-              offset: Offset(0, 5),
-            )
-          ],
           color: kBoxContainerColor,
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(20),
@@ -360,7 +354,7 @@ class PopUpContainer extends StatelessWidget {
               height: height * 0.03,
             ),
             RoundButtonWidget(
-              onTap: () {
+              onTap: () async {
                 /*If it is fromGetStarted == true then book now button is shown
                 If fromGetStarted != true buy now button is shown*/
 
@@ -369,14 +363,12 @@ class PopUpContainer extends StatelessWidget {
                     ? Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AddBookingScreen(
-                                  serviceName: serviceName,
-                                )))
-                    : Navigator.push(
-                        context,
-                        MaterialPageRoute(
                             builder: (context) =>
-                                AddressBook())); // Going to Address Book
+                                AddBookingScreen(serviceName: serviceName)))
+                    : Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => AddressBook()));
+
+                // Going to Address Book
               },
               title: fromGetStarted ? 'Book now' : 'Buy now',
               width: width * 0.339,
@@ -675,7 +667,6 @@ class BookingCard extends StatelessWidget {
       width: width * 0.773,
       decoration: BoxDecoration(
         color: Colors.white,
-//          0xff7F7B78
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
@@ -685,20 +676,52 @@ class BookingCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              '$service at $time, $day',
+          ///user name and time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$name',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    '#$bookingId',
+                    style: TextStyle(
+                      fontSize: 8,
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                '$time \n$day',
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
+
+          Divider(),
+
+          ///service name
+          ListTile(
+            contentPadding: EdgeInsets.all(0),
+            title: Text(
+              '$service',
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          SizedBox(
-            height: height * 0.03,
-          ),
+
+          Divider(),
+
+          ///cancel button
           Expanded(
             flex: 1,
             child: Align(
@@ -716,7 +739,7 @@ class BookingCard extends StatelessWidget {
                     child: Text(
                       'cancel',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white,
                       ),
                       textAlign: TextAlign.center,
                     ),

@@ -2,6 +2,9 @@ import 'package:barber_shop/auth_service.dart';
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/constants.dart';
 import 'package:barber_shop/provider_data.dart';
+import 'package:barber_shop/screens/home_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:barber_shop/terms_and_services.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -22,24 +25,17 @@ class TermsAndServicesScreen extends StatefulWidget {
 class _TermsAndServicesScreenState extends State<TermsAndServicesScreen> {
   Authentication authentication = Authentication();
 
+  final _auth = FirebaseAuth.instance;
+  final _fireStore = FirebaseFirestore.instance;
+  bool showSpinner = false;
+
   @override
   void initState() {
-    /*When TermsAndServicesScreen is built it sets the signUpError and showSignUpSpinner
-     Provider variables to false
+    ///When TermsAndServicesScreen is built it sets the signUpError and showSignUpSpinner
+    ///Provider variables to false
+    /// This way the errorText and loading spinner is not shown
 
-     This way the errorText and loading spinner is not shown*/
-
-    Provider.of<ProviderData>(context, listen: false).showSignUpSpinner = false;
     super.initState();
-  }
-
-  void onTapSignUp() {
-    authentication.singUp(
-      context,
-      email: widget.email,
-      password: widget.password,
-      userName: widget.userName,
-    );
   }
 
   @override
@@ -50,7 +46,7 @@ class _TermsAndServicesScreenState extends State<TermsAndServicesScreen> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: ModalProgressHUD(
-        inAsyncCall: Provider.of<ProviderData>(context).showSignUpSpinner,
+        inAsyncCall: showSpinner,
         progressIndicator: Theme(
           data: ThemeData(accentColor: kButtonColor),
           child: CircularProgressIndicator(),
@@ -117,5 +113,33 @@ class _TermsAndServicesScreenState extends State<TermsAndServicesScreen> {
         ),
       ),
     );
+  }
+
+  void onTapSignUp() async {
+    setState(() {
+      showSpinner = true;
+    });
+
+    try {
+      final user = await _auth.createUserWithEmailAndPassword(
+          email: widget.email, password: widget.password);
+      final uid = _auth.currentUser.uid;
+      await _fireStore.collection('users').doc(uid).set({
+        'email': widget.email,
+        'password': widget.password,
+        'uid': uid,
+        'userName': widget.userName,
+      });
+      if (user != null) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      }
+    } catch (e) {
+      Navigator.pop(context, true);
+    }
+
+    setState(() {
+      showSpinner = false;
+    });
   }
 }

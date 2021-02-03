@@ -14,54 +14,10 @@ final _auth = FirebaseAuth.instance;
 final _fireStore = FirebaseFirestore.instance;
 
 class Authentication {
-  /*Checks the the users email and password and if it has a value
-  the screen is pushed to HomeScreen.If the value is equal to null
-  Provider logInError variable is set to false(Error text is shown)*/
+  ///Gets the credentials from apple api and sign into firebase with credentials
+  ///uid, email and userName are taken and set to the specific fields
+  ///Sets the password as logged in with Apple
 
-  void logIn(context, {String email, String password}) async {
-    try {
-      final user = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-
-      if (user != null) {
-        Navigator.pushNamed(context, HomeScreen.id);
-        App.prefs.setString("uid", user.user.uid);
-      }
-    } catch (e) {
-      Provider.of<ProviderData>(context, listen: false).loginError = true;
-    }
-  }
-
-  void singUp(context, {String email, String password, String userName}) async {
-    Provider.of<ProviderData>(context, listen: false).showSignUpSpinner = true;
-    try {
-      final user = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      final uid = _auth.currentUser.uid;
-      await _fireStore.collection('users').doc(uid).set({
-        'email': email,
-        'password': password,
-        'uid': uid,
-        'userName': userName,
-      });
-      if (user != null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
-        App.prefs.setString("uid", uid);
-      }
-    } catch (e) {
-      Provider.of<ProviderData>(context, listen: false).signUpError = true;
-      print(
-          'error signUp ${Provider.of<ProviderData>(context, listen: false).signUpError}');
-    }
-    Provider.of<ProviderData>(context, listen: false).showSignUpSpinner = false;
-  }
-
-  /*Gets the credentials from apple api and sign into firebase with credentials
-
- uid, email and userName are taken and set to the specific fields
-
- Sets the password as logged in with Apple*/
   void signInWithApple(BuildContext context) async {
     try {
       final appleIdCredential = await SignInWithApple.getAppleIDCredential(
@@ -79,7 +35,7 @@ class Authentication {
       print(appleIdCredential);
       print(credential);
 
-      //After this its my code
+      ///After this its my code
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
@@ -108,11 +64,10 @@ class Authentication {
     }
   }
 
-  /*Gets the credentials from google api and sign into firebase with credentials
+  ///Gets the credentials from google api and sign into firebase with credentials
+  /// uid, email , userName are taken and set to the specific fields
+  ///  Sets the password as logged in with Google
 
- uid, email , userName are taken and set to the specific fields
-
- Sets the password as logged in with Google*/
   Future<String> googleSignIn(BuildContext context) async {
     try {
       final GoogleSignInAccount googleSignInAccount =

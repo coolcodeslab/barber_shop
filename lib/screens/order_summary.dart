@@ -1,6 +1,7 @@
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/constants.dart';
 import 'package:barber_shop/provider_data.dart';
+import 'package:barber_shop/screens/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -125,6 +126,7 @@ class _OrderSummaryState extends State<OrderSummary> {
 
   void setupOrder(transactionId, Token token,
       {String productName, String productPrice, String productId}) {
+    print('done');
     try {
       FirebaseFirestore.instance
           .collection("users")
@@ -142,6 +144,7 @@ class _OrderSummaryState extends State<OrderSummary> {
       }).then((value) {
         Navigator.pop(context);
         Navigator.pop(context);
+        Navigator.pop(context, true);
       });
       FirebaseFirestore.instance.collection('orders').doc(transactionId).set({
         'customerEmail': _auth.currentUser.email,
@@ -152,6 +155,8 @@ class _OrderSummaryState extends State<OrderSummary> {
         "ShippingAddress": widget.payLoad['address'],
         "token": token.toJson(),
         'timeStamp': timeStamp,
+        'completed': false,
+        'userName': _auth.currentUser.displayName,
       });
     } catch (err) {
       print("Error on Fetching Address ==> $err");

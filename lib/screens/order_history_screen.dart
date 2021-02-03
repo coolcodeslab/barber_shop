@@ -1,3 +1,4 @@
+import 'package:barber_shop/models/order_history_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,24 +6,34 @@ import 'package:barber_shop/constants.dart';
 import 'package:intl/intl.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
+  static const id = 'order history screen';
   @override
   _OrderHistoryScreenState createState() => _OrderHistoryScreenState();
 }
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   final _auth = FirebaseAuth.instance;
-  final _fireStore = FirebaseFirestore.instance;
   String uid;
+  final scrollController = ScrollController();
+  OrdersHistoryModel orders;
 
   @override
   void initState() {
     uid = _auth.currentUser.uid;
+
+    orders = OrdersHistoryModel(uid: uid);
+
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.offset) {
+        orders.loadMore();
+      }
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
@@ -38,59 +49,52 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       backgroundColor: kBackgroundColor,
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 40),
-        child:
-            /*All the order in the currents users booking collections
-              is displayed
-
-              Only name of the name given when booking is displayed*/
-            StreamBuilder<QuerySnapshot>(
-          stream: _fireStore
-              .collection('users')
-              .doc(uid)
-              .collection('orders')
-              .orderBy('timeStamp')
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
+        child: StreamBuilder(
+          stream: orders.stream,
+          builder: (BuildContext _context, AsyncSnapshot _snapshot) {
+            if (!_snapshot.hasData) {
               return Center(
                 child: Theme(
-                  data: ThemeData(accentColor: kButtonColor),
+                  data: ThemeData(
+                    accentColor: kButtonColor,
+                  ),
                   child: CircularProgressIndicator(),
                 ),
               );
-            }
-            List<Widget> orderList = [];
-            final orders = snapshot.data.docs;
-            for (var order in orders) {
-              final shippingAddress = order['ShippingAddress'];
-              final transactionId = order['StripTransactionId'];
-              final productId = order['productId'];
-              final productPrice = order['productPrice'];
-              final productName = order['productName'];
-
-              //getting the date
-              final dateTime = order['timeStamp'];
-              var date = dateTime.toDate();
-              final passedDate = DateTime(date.year, date.month, date.day);
-              final day = DateFormat('yMMMEd').format(passedDate);
-
-              final orderContainer = OrderContainer(
-                shippingAddress: shippingAddress,
-                transactionId: transactionId,
-                productId: productId,
-                productPrice: productPrice,
-                productName: productName,
-                date: day,
+            } else {
+              return RefreshIndicator(
+                color: kButtonColor,
+                onRefresh: orders.refresh,
+                child: ListView.separated(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  controller: scrollController,
+                  separatorBuilder: (context, index) => Container(),
+                  itemCount: _snapshot.data.length + 1,
+                  itemBuilder: (BuildContext _context, int index) {
+                    if (index < _snapshot.data.length) {
+                      return OrderContainer(order: _snapshot.data[index]);
+                    } else if (orders.hasMore) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32.0),
+                        child: Center(
+                          child: Theme(
+                            data: ThemeData(
+                              accentColor: kButtonColor,
+                            ),
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32.0),
+                        child: Center(child: Text('nothing more to load!')),
+                      );
+                    }
+                  },
+                ),
               );
-              //Add container to list
-              orderList.add(orderContainer);
             }
-
-            return ListView(
-              reverse: true,
-              shrinkWrap: true,
-              children: orderList,
-            );
           },
         ),
       ),
@@ -99,34 +103,25 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 }
 
 class OrderContainer extends StatelessWidget {
-  OrderContainer({
-    @required this.shippingAddress,
-    @required this.transactionId,
-    @required this.productId,
-    @required this.productPrice,
-    @required this.productName,
-    this.date,
-  });
+  OrderContainer({this.order});
 
-  final String shippingAddress;
-  final String transactionId;
-  final String productId;
-  final String productPrice;
-  final String productName;
-  final String date;
+  final OrderHistoryModel order;
 
   @override
   Widget build(BuildContext context) {
+    var date = order.timeStamp.toDate();
+    final passedDate = DateTime(date.year, date.month, date.day);
+    final purchasedDate = DateFormat('yMMMEd').format(passedDate);
+
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
+
     return Container(
       padding: EdgeInsets.all(20),
       margin: EdgeInsets.only(bottom: 30),
-      height: height * 0.2,
       width: width * 0.773,
       decoration: BoxDecoration(
         color: Colors.white,
-//          0xff7F7B78
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
@@ -136,24 +131,103 @@ class OrderContainer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            productName,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ///Order with Icon
+              Row(
+                children: [
+                  Icon(
+                    Icons.bookmark_border,
+                    color: kButtonColor,
+                  ),
+                  Text(
+                    'Order',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+
+              ///Date
+              Text(
+                purchasedDate,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          Divider(),
+
+          ///Product name and price
+          ListTile(
+            contentPadding: EdgeInsets.all(0),
+            title: Text(
+              order.productName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 7,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Text(
+                '\$${order.productPrice}',
+              ),
             ),
           ),
-          Text(
-            '\$$productPrice',
-            style: TextStyle(color: Colors.black),
+          Divider(),
+
+          ///Address
+          Row(
+            children: [
+              Icon(
+                Icons.pin_drop,
+                color: kButtonColor,
+                size: 16,
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text(
+                order.shippingAddress,
+                style: TextStyle(color: Colors.black),
+              ),
+            ],
           ),
-          Text(
-            shippingAddress,
-            style: TextStyle(color: Colors.black),
+
+          SizedBox(
+            height: 10,
           ),
-          Text(
-            'date purchased: $date',
-            style: TextStyle(color: Colors.black),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Status',
+                style: TextStyle(color: Colors.blue),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 7),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Text(
+                  'Paid',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

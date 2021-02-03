@@ -28,7 +28,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     return Container(
       width: width * 0.36,
       color: Colors.white,
-//      0xff4D4A56
       child: Column(
         children: [
           SizedBox(
@@ -88,7 +87,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   //Pushes to the appointments screen
   void onTapBooking() {
     Navigator.pop(context);
-    Navigator.pushNamed(context, AppointmentsScreen.id);
+    Navigator.pushNamed(context, BookingsScreen.id);
   }
 
   //Signs out User and pushes the screen to LoginScreen

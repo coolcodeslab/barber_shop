@@ -37,6 +37,13 @@
 	<string>describe why your app needs access to the camera.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>describe why your app needs permission for the photo library.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

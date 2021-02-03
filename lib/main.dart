@@ -1,5 +1,6 @@
 import 'package:barber_shop/provider_data.dart';
 import 'package:barber_shop/screens/bookings_screen.dart';
+import 'package:barber_shop/screens/order_history_screen.dart';
 import 'package:barber_shop/screens/pick_a_time_screen.dart';
 import 'package:barber_shop/screens/add_booking_screen.dart';
 import 'package:barber_shop/screens/home_screen.dart';
@@ -41,13 +42,14 @@ class MyApp extends StatelessWidget {
           SignupScreen.id: (context) => SignupScreen(),
           HomeScreen.id: (context) => HomeScreen(),
           AddBookingScreen.id: (context) => AddBookingScreen(),
-          AppointmentsScreen.id: (context) => AppointmentsScreen(),
+          BookingsScreen.id: (context) => BookingsScreen(),
           ItemScreen.id: (context) => ItemScreen(),
           LoadingScreen.id: (context) => LoadingScreen(),
           PickATimeScreen.id: (context) => PickATimeScreen(),
           ProfileScreen.id: (context) => ProfileScreen(),
           ResetPasswordScreen.id: (context) => ResetPasswordScreen(),
           TermsAndServicesScreen.id: (context) => TermsAndServicesScreen(),
+          OrderHistoryScreen.id: (context) => OrderHistoryScreen(),
         },
       ),
     );

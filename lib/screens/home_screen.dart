@@ -1,9 +1,17 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:barber_shop/constants.dart';
 import 'package:barber_shop/provider_data.dart';
 import 'package:barber_shop/screens/add_booking_screen.dart';
+import 'package:barber_shop/screens/bookings_screen.dart';
 import 'package:barber_shop/screens/item_screen.dart';
+import 'package:barber_shop/screens/order_history_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:barber_shop/barber_widgets.dart';
 import 'package:barber_shop/screens/drawer_screen.dart';
@@ -20,6 +28,39 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _auth = FirebaseAuth.instance;
   final _fireStore = FirebaseFirestore.instance;
+
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _saveDeviceToken();
+
+//    if (Platform.isIOS) {
+//      firebaseMessaging.onIosSettingsRegistered.listen((event) {
+//        _saveDeviceToken();
+//      });
+//
+//      firebaseMessaging
+//          .requestNotificationPermissions(IosNotificationSettings());
+//    } else {
+//      _saveDeviceToken();
+//    }
+  }
+
+  ///Saving device token to fireStore
+  _saveDeviceToken() async {
+    final String uid = _auth.currentUser.uid;
+
+    final String fcmToken = await firebaseMessaging.getToken();
+
+    if (fcmToken != null) {
+      await _fireStore.collection('users').doc(uid).update({
+        'token': fcmToken,
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
         body: Stack(
           children: [
-//            BackGround Design
+            /// BackGround Design
             BackGroundDesign(
               height: height * 0.75,
               width: width * 1.333,
             ),
 
-            //Main body
+            ///Main body
             ListView(
               children: [
                 SizedBox(
@@ -99,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
-                          name == null ? 'How can we help you' : name,
+                          name == null ? '' : name,
                           style: kHeadingTextStyle,
                         ),
                       );
@@ -249,17 +290,32 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /*When Book now button is pressed it pushes to th booking screen*/
-  void onTapBookNow() {
+  void onTapBookNow() async {
     setState(() {
       Provider.of<ProviderData>(context, listen: false).isTimePicked = false;
     });
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddBookingScreen(
-            serviceName: kDropDownFirstValue,
-          ),
-        ));
+    final bool isBooked = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddBookingScreen(
+          serviceName: kDropDownFirstValue,
+        ),
+      ),
+    );
+
+    try {
+      if (isBooked) {
+        showFlushBar(
+          pushedScreen: BookingsScreen.id,
+          title: "Booking confirmation",
+          message: "Your booking has been confirmed",
+        );
+      } else {
+        print('null');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   /*Passes the relevant sections that should be displayed in the tab bar
@@ -291,8 +347,8 @@ class _HomeScreenState extends State<HomeScreen> {
   and the heading
 
   From getStarted bool is also passed */
-  void onTapProducts() {
-    Navigator.push(
+  void onTapProducts() async {
+    final bool orderSuccessFull = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ItemScreen(
@@ -305,6 +361,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+
+    try {
+      if (orderSuccessFull) {
+        showFlushBar(
+          pushedScreen: OrderHistoryScreen.id,
+          title: "Order confirmation",
+          message: "Your order was successfully placed",
+        );
+      } else {
+        print('unsuccessful');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   /*When service container is tapped a dialog box pops up with the name
@@ -338,5 +408,28 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+  }
+
+  Flushbar showFlushBar({String pushedScreen, String title, String message}) {
+    return Flushbar(
+      mainButton: FlatButton(
+        child: Text(
+          'view',
+          style: TextStyle(
+            color: kButtonColor,
+          ),
+        ),
+        onPressed: () {
+          Navigator.pushNamed(
+            context,
+            pushedScreen,
+          );
+        },
+      ),
+      flushbarPosition: FlushbarPosition.TOP,
+      title: title,
+      message: message,
+      duration: Duration(seconds: 5),
+    )..show(context);
   }
 }

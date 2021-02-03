@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
           final data = snapshot.data;
           final String email = data['email'];
-          final String uid = data['uid'];
+
           final String userName = data['userName'];
 
           String imageUrl;

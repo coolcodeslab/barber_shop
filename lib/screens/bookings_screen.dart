@@ -8,15 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class AppointmentsScreen extends StatefulWidget {
+class BookingsScreen extends StatefulWidget {
   static const id = 'appointments screen';
-  AppointmentsScreen({this.uid});
+  BookingsScreen({this.uid});
   final String uid;
   @override
-  _AppointmentsScreenState createState() => _AppointmentsScreenState();
+  _BookingsScreenState createState() => _BookingsScreenState();
 }
 
-class _AppointmentsScreenState extends State<AppointmentsScreen> {
+class _BookingsScreenState extends State<BookingsScreen> {
   final _auth = FirebaseAuth.instance;
   final _fireStore = FirebaseFirestore.instance;
   String uid;
@@ -45,38 +45,23 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: kButtonColor,
+        ),
+        title: Text(
+          'Bookings',
+          style: kHeadingTextStyle,
+        ),
+        backgroundColor: kBackgroundColor,
+        elevation: 0,
+      ),
       body: Stack(
         children: [
-          BackGroundDesign(
-            height: height * 0.75,
-            width: width * 1.333,
-          ),
           ListView(
             children: [
               SizedBox(
                 height: height * 0.015,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    BackButton(
-                      color: kButtonColor,
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 20,
-                ),
-                child: Text(
-                  'Bookings',
-                  style: kHeadingTextStyle,
-                ),
-              ),
-              SizedBox(
-                height: height * 0.03,
               ),
 
               /*All the bookings in the currents users booking collections
@@ -104,17 +89,22 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                   final bookings = snapshot.data.docs;
 
                   for (var eachBooking in bookings) {
-                    //name
+                    ///name
                     final name = eachBooking['name'];
-                    //timeStamp
+
+                    ///timeStamp
                     final timeStamp = eachBooking['timeStamp'];
-                    //service name
+
+                    ///service name
                     final service = eachBooking['service'];
-                    //time
+
+                    ///time
                     final time = eachBooking['time'];
-                    //bookingIf
+
+                    ///bookingIf
                     final bookingId = eachBooking['bookingId'];
-                    //Date only string
+
+                    ///Date only string
                     var date = timeStamp.toDate();
                     String day = DateFormat('EEEE').format(date);
                     String dayNum = DateFormat('d').format(date);
@@ -175,6 +165,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     } catch (e) {
       print(e);
     }
+    print('hey the booking slot at 5.30pm on 12/6 is free');
   }
 
   void onTapBookingCancel({String date, String bookingId, String index}) async {

@@ -56,7 +56,7 @@ class _ItemScreenState extends State<ItemScreen>
       backgroundColor: kBackgroundColor,
       body: Stack(
         children: [
-          //Background Design
+          ///Background Design
           BackGroundDesign(
             height: height * 0.45,
             width: width * 0.8,
@@ -68,7 +68,7 @@ class _ItemScreenState extends State<ItemScreen>
                 height: height * 0.045,
               ),
 
-              //Back button
+              ///Back button
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -76,6 +76,7 @@ class _ItemScreenState extends State<ItemScreen>
                   children: [
                     BackButton(
                       color: kButtonColor,
+                      onPressed: () => Navigator.pop(context, false),
                     ),
                   ],
                 ),
@@ -84,7 +85,7 @@ class _ItemScreenState extends State<ItemScreen>
               //what happens in the..
               ItemScreenTopMessage(),
 
-              //'Your choice' heading
+              ///'Your choice' heading
               Padding(
                 padding: EdgeInsets.only(
                   left: 20,
@@ -96,7 +97,7 @@ class _ItemScreenState extends State<ItemScreen>
                 ),
               ),
 
-              //Tab bars
+              ///Tab bars
               Padding(
                 padding: EdgeInsets.all(10),
                 child: TabBar(
